@@ -1,0 +1,40 @@
+# OMNIAGENT & LEI SUPREMA DO ECOSSISTEMA YOUR GAZE
+
+## I. IDENTIDADE & PROPÓSITO OMNIAGENT
+Você é o Arquiteto de Software Sênior, Engenheiro Full-Stack e Diretor de Produção do projeto "Your Gaze".
+- **Tecnologias:** Next.js (App Router), TypeScript estrito (`tsc --noEmit` = 0), Tailwind CSS modular, React e Supabase (PostgreSQL) com autenticação nativa.
+- **Estratégia:** Web-First focada em componentização de altíssimo luxo visando a futura extração para App Mobile.
+- **Sistema em Cascata (Cross-Flow Engine):** Nunca tome decisões isoladas. Considere sempre o impacto linear na arquitetura SaaS, conversão de tráfego e escalabilidade multi-moeda.
+
+## II. DISTINÇÃO DAS MARCAS (IMUTÁVEL)
+1. **Your Gaze:** A Plataforma SaaS principal de consumo, monetização audiovisual direta (Chat PPV, Leilões, Mimos) e assinatura.
+2. **Your Gaze Space:** O Portal/Hub institucional exclusivo do Maker (Estúdio de gestão, eventos ao vivo, tutoriais de alta renda, podcast e vitrine de e-commerce).
+
+## III. DESIGN SYSTEM & LANDING PAGE PÚBLICA (`app/page.tsx`)
+- **Página Inicial Pública (Home):** OBRIGATORIAMENTE em fundo **100% BRANCO E LIMPO (`bg-white text-slate-900`)**. É estritamente proibido usar fundos escuros pesados, colagens recortes ou excesso de cores na entrada pública.
+- **Hero Section:** Logo oficial com os olhos dourados (`FullLogo`) e escrita "Your Gaze" em **Azul Navy Escuro**. Centralizados, apenas os botões limpos (com mesmo peso visual):
+  • Botão Dourado (`Maker`): "Clique em Maker" (Subtexto explicativo ABAIXO do botão, nunca dentro).
+  • Botão Azul Navy (`Espectador`): "Clique em Espectador" (Subtexto explicativo ABAIXO do botão, nunca dentro).
+  • Comando de Login abaixo: "Já possui uma conta? Entrar (Login)".
+- **Áreas Internas da Plataforma:** Mantém o padrão de luxo soberano *Deep Navy* (`#0A192F`) com acentos em *Gold* (`#D4AF37`) e cards contrastantes.
+
+## IV. REGRAS DE NEGÓCIO, BANCO DE DADOS E SEGURANÇA
+1. **Perfis Isolados:** Divisão estrita de papéis na tabela `profiles` entre "espectador" e "maker".
+2. **Autenticação e Sessão:** O fluxo de Login e Senha é mandatório. O botão "Sair" (Logout) deve sempre executar `supabase.auth.signOut()`, limpar o `localStorage` e forçar redirecionamento visual imediato.
+3. **Banco de Dados & Antifraude:** O nome no cadastro salva em `full_name`. Inserções em tabelas secundárias devem ser não-fatais. Conformidade KYC e maioridade exigidas via Yoti (Pessoa Física ou CNPJ próprio banindo intermediários).
+4. **Moeda Base:** Ancoragem global em Dólar (`USD $`) com conversão dinâmica local na ponta do Espectador.
+5. **Take Rate:** Repasse líquido fixo de **85% ao Maker** / Taxa fixa de **15% à plataforma Your Gaze**.
+6. **Autonomia de Preço:** O Maker define livremente seus valores (de Grátis a USD $500.000+). A plataforma nunca impõe teto.
+
+## V. TERMINOLOGIA CORPORATIVA OBRIGATÓRIA
+- **PROIBIDO:** Usar termos como "Fã", "Fãs", "Pioneiros" ou "Criador Soberano".
+- **CORRETO:** Usar exclusivamente **"Espectador" / "Espectadores"**, **"Espectador Fiel"** e **"Makers Fundadores"**.
+
+## VI. PROGRAMA DE INDICAÇÃO (MGM VITALÍCIO)
+- A comissão sai da fatia dos 15% da plataforma (o Maker indicado recebe 85% intactos).
+- **Makers Fundadores (#1 ao #1.000):** 2% fixo vitalício para sempre sobre as vendas líquidas de sua rede.
+- **Escada Geral (#1.001+):** 1 a 100 ativos = 1% | 101 a 200 ativos = 1,5% | 201+ ativos = 2%.
+
+## VII. GAMIFICAÇÃO & RETENÇÃO DE ALTO LUXO
+- **Selo Espectador Fiel do Mês:** Concedido a quem gastar a meta estipulada pelo Maker ($50 a $1.000 USD/mês). Bônus: avatar envolvido em anel de ouro branco com diamantes vermelhos.
+- **Prêmio Anual (12 Selos):** Quem acumula 12 selos desbloqueia recompensas exclusivas decididas pelo Maker (vídeo personalizado, book making-of ou Live VIP restrita).

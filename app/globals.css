@@ -177,3 +177,28 @@
     @apply font-sans;
   }
 }
+
+/* ─── Animação de Mimo (float-up overlay em Lives e Leilões) ──────────────── */
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) scale(0.6) rotate(-8deg);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0px) scale(1.05) rotate(4deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-220px) scale(1) rotate(-3deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-300px) scale(0.9) rotate(6deg);
+  }
+}
+
+.animate-mimo-float {
+  animation: floatUp 4.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

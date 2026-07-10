@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Play, Ticket, Timer, Users, User, Radio, Gift, Check } from 'lucide-react'
 import { makers } from '@/lib/data'
 import { useApp } from '@/components/app-context'
+import { useDict } from '@/lib/locale-context'
 import { CheckoutModal } from '@/components/checkout-modal'
 
 type Oferta = {
@@ -17,77 +18,86 @@ type Oferta = {
   destaque?: boolean
 }
 
-// Lives públicas com vários espectadores — acesso por ingresso.
-const ingressos = [
-  {
-    id: 'l1',
-    maker: makers[0],
-    title: 'Live coletiva da semana',
-    lotacao: 'Vários espectadores',
-    preco: 'US$ 50',
-  },
-  {
-    id: 'l2',
-    maker: makers[2],
-    title: 'Show especial — encomenda',
-    lotacao: 'Ingresso avulso',
-    preco: 'US$ 120',
-  },
-  {
-    id: 'l3',
-    maker: makers[3],
-    title: 'Bastidores ao vivo',
-    lotacao: 'Vários espectadores',
-    preco: 'US$ 80',
-  },
-]
-
-// Compra de tempo / formatos de live.
-const formatos: Oferta[] = [
-  {
-    id: 'f1',
-    titulo: 'Comprar tempo (PPV)',
-    descricao: 'Carregue minutos e use para assistir lives ou parte delas até o tempo acabar.',
-    preco: 'a partir de US$ 50',
-    icon: Timer,
-    badge: 'Por minuto',
-    destaque: true,
-  },
-  {
-    id: 'f2',
-    titulo: 'Live individual (1:1)',
-    descricao: 'Sessão privada só entre você e o Maker.',
-    preco: 'a partir de US$ 200',
-    icon: User,
-  },
-  {
-    id: 'f3',
-    titulo: 'Live em grupo (até 10)',
-    descricao: 'Grupo fechado de no máximo 10 pessoas.',
-    preco: 'a partir de US$ 100',
-    icon: Users,
-  },
-  {
-    id: 'f4',
-    titulo: 'Game ao vivo',
-    descricao: 'Participe de dinâmicas e games durante a transmissão.',
-    preco: 'a partir de US$ 30',
-    icon: Play,
-  },
-]
+type Ingresso = {
+  id: string
+  maker: (typeof makers)[number]
+  title: string
+  lotacao: string
+  preco: string
+}
 
 export function TransmissaoScreen() {
   const { isFiel } = useApp()
-  const [checkout, setCheckout] = useState<{ plan: string; price: string } | null>(null)
+  const t = useDict()
+  const [checkout, setCheckout] = useState<{
+    plan: string
+    price: string
+    maker: string
+    makerId: string
+  } | null>(null)
+
+  const formatos: Oferta[] = [
+    {
+      id: 'f1',
+      titulo:   t.transmissao.ppv_titulo,
+      descricao: t.transmissao.ppv_desc,
+      preco: 'a partir de US$ 50',
+      icon: Timer,
+      badge: t.transmissao.ppv_badge,
+      destaque: true,
+    },
+    {
+      id: 'f2',
+      titulo:   t.transmissao.live_11_titulo,
+      descricao: t.transmissao.live_11_desc,
+      preco: 'a partir de US$ 200',
+      icon: User,
+    },
+    {
+      id: 'f3',
+      titulo:   t.transmissao.live_grupo_titulo,
+      descricao: t.transmissao.live_grupo_desc,
+      preco: 'a partir de US$ 100',
+      icon: Users,
+    },
+    {
+      id: 'f4',
+      titulo:   t.transmissao.game_titulo,
+      descricao: t.transmissao.game_desc,
+      preco: 'a partir de US$ 30',
+      icon: Play,
+    },
+  ]
+
+  const ingressos: Ingresso[] = [
+    {
+      id: 'l1',
+      maker: makers[0],
+      title: 'Live coletiva da semana',
+      lotacao: t.transmissao.varios,
+      preco: 'US$ 50',
+    },
+    {
+      id: 'l2',
+      maker: makers[2],
+      title: 'Show especial — encomenda',
+      lotacao: t.transmissao.avulso,
+      preco: 'US$ 120',
+    },
+    {
+      id: 'l3',
+      maker: makers[3],
+      title: 'Bastidores ao vivo',
+      lotacao: t.transmissao.varios,
+      preco: 'US$ 80',
+    },
+  ]
 
   return (
     <div className="px-6 py-8">
       <header className="mx-auto mb-6 max-w-4xl">
-        <h2 className="font-heading text-2xl text-navy">Transmissão</h2>
-        <p className="text-sm text-muted-foreground">
-          Acesso vendido por ingresso, tempo (PPV), games e lives individuais ou em grupo (até 10).
-          Compre só o que quiser assistir.
-        </p>
+        <h2 className="font-heading text-2xl text-navy">{t.transmissao.title}</h2>
+        <p className="text-sm text-muted-foreground">{t.transmissao.subtitle}</p>
       </header>
 
       {/* Bônus para Fiel Espectador */}
@@ -97,17 +107,15 @@ export function TransmissaoScreen() {
             <Gift className="size-5" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-navy">Bônus de assinatura ativo</p>
-            <p className="text-xs text-muted-foreground">
-              Como Fiel Espectador, o Maker liberou para você as lives coletivas incluídas no seu plano.
-            </p>
+            <p className="text-sm font-semibold text-navy">{t.transmissao.bonus}</p>
+            <p className="text-xs text-muted-foreground">{t.transmissao.bonus_desc}</p>
           </div>
         </div>
       )}
 
       {/* Formatos / compra de tempo */}
       <section className="mx-auto mb-10 max-w-4xl">
-        <h3 className="mb-4 font-heading text-lg text-navy">Formatos disponíveis</h3>
+        <h3 className="mb-4 font-heading text-lg text-navy">{t.transmissao.formatos}</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {formatos.map((f) => {
             const Icon = f.icon
@@ -127,10 +135,15 @@ export function TransmissaoScreen() {
                 </p>
                 <p className="mt-3 text-sm font-semibold text-gold">{f.preco}</p>
                 <button
-                  onClick={() => setCheckout({ plan: f.titulo, price: f.preco })}
+                  onClick={() => setCheckout({
+                    plan: f.titulo,
+                    price: f.preco,
+                    maker: makers[0].name,
+                    makerId: makers[0].id,
+                  })}
                   className="mt-3 rounded-xl bg-navy py-2.5 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90"
                 >
-                  Comprar
+                  {t.transmissao.comprar}
                 </button>
               </div>
             )
@@ -140,7 +153,7 @@ export function TransmissaoScreen() {
 
       {/* Ingressos de lives coletivas */}
       <section className="mx-auto max-w-4xl">
-        <h3 className="mb-4 font-heading text-lg text-navy">Ingressos para lives</h3>
+        <h3 className="mb-4 font-heading text-lg text-navy">{t.transmissao.ingressos}</h3>
         <div className="grid gap-5 md:grid-cols-3">
           {ingressos.map((l) => (
             <div key={l.id} className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -164,14 +177,19 @@ export function TransmissaoScreen() {
                   <span className="text-sm font-semibold text-gold">{l.preco}</span>
                   {isFiel ? (
                     <span className="flex items-center gap-1 text-xs font-medium text-navy">
-                      <Check className="size-3.5 text-gold" /> Incluído
+                      <Check className="size-3.5 text-gold" /> {t.transmissao.incluido}
                     </span>
                   ) : (
                     <button
-                      onClick={() => setCheckout({ plan: `Ingresso · ${l.title}`, price: l.preco })}
+                      onClick={() => setCheckout({
+                        plan: `${t.transmissao.ingresso_btn} · ${l.title}`,
+                        price: l.preco,
+                        maker: l.maker.name,
+                        makerId: l.maker.id,
+                      })}
                       className="flex items-center gap-1 rounded-lg bg-gold px-3 py-1.5 text-xs font-semibold text-navy hover:opacity-90"
                     >
-                      <Ticket className="size-3.5" /> Ingresso
+                      <Ticket className="size-3.5" /> {t.transmissao.ingresso_btn}
                     </button>
                   )}
                 </div>
@@ -182,7 +200,13 @@ export function TransmissaoScreen() {
       </section>
 
       {checkout && (
-        <CheckoutModal plan={checkout.plan} price={checkout.price} onClose={() => setCheckout(null)} />
+        <CheckoutModal
+          plan={checkout.plan}
+          price={checkout.price}
+          maker={checkout.maker}
+          makerId={checkout.makerId}
+          onClose={() => setCheckout(null)}
+        />
       )}
     </div>
   )

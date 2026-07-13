@@ -1,8 +1,12 @@
 /**
  * YOUR GAZE — Tipos TypeScript do Schema Supabase
  *
- * Gerado manualmente a partir de supabase/migrations/20260709_001_initial_schema.sql
- * Em produção, gerar automaticamente via: `supabase gen types typescript --local > lib/database.types.ts`
+ * Gerado manualmente a partir de:
+ *   supabase/migrations/20260709_001_initial_schema.sql
+ *   supabase/migrations/20260711_004_live_engine.sql
+ *
+ * Em produção, gerar automaticamente via:
+ *   supabase gen types typescript --local > lib/database.types.ts
  */
 
 // ─── ENUMs ────────────────────────────────────────────────────────────────────
@@ -10,10 +14,12 @@
 export type UserRole         = 'MAKER' | 'VIEWER' | 'ADMIN'
 export type KycStatus        = 'PENDING' | 'VERIFIED' | 'REJECTED'
 export type PostType         = 'PPV_MEDIA' | 'AUCTION' | 'POLL' | 'MIMO_GOAL'
-export type TransactionType  = 'PPV_UNLOCK' | 'MIMO_SENT' | 'SUBSCRIPTION' | 'AD_REVENUE' | 'MGM_BONUS'
+export type TransactionType  = 'PPV_UNLOCK' | 'MIMO_SENT' | 'SUBSCRIPTION' | 'AD_REVENUE' | 'MGM_BONUS' | 'LIVE_TICKET' | 'GAME_BID'
 export type SubscriptionTier = 'FREE' | 'PREMIUM' | 'GOLD' | 'DIAMOND'
 export type AuctionStatus    = 'ACTIVE' | 'ENDED' | 'CANCELLED'
 export type TransactionStatus = 'PENDING_CLEARANCE' | 'CLEARED' | 'DISPUTED' | 'REFUNDED'
+export type LiveType         = 'INDIVIDUAL' | 'COLLECTIVE'
+export type LiveStatus       = 'SCHEDULED' | 'LIVE' | 'COMPLETED' | 'CANCELLED'
 
 // ─── Linhas de Tabela (Row types) ─────────────────────────────────────────────
 
@@ -147,6 +153,74 @@ export type TransactionInsert = Omit<TransactionRow,
   | 'created_at'
 >
 
+// ─── Live Engine — Transmissões Agendadas ─────────────────────────────────────
+
+export interface ScheduledLiveRow {
+  id:                  string
+  maker_id:            string
+  type:                LiveType
+  status:              LiveStatus
+  title:               string
+  scheduled_start_at:  string           // ISO 8601
+  started_at:          string | null    // preenchido ao status → LIVE
+  ended_at:            string | null    // preenchido ao status → COMPLETED
+  ticket_price_usd:    number           // 0 = gratuita
+  min_participants:    number
+  game_rounds:         number
+  current_round:       number
+  stream_url:          string | null
+  created_at:          string
+  updated_at:          string
+}
+
+export type ScheduledLiveInsert = Omit<ScheduledLiveRow,
+  | 'id'
+  | 'status'
+  | 'started_at'
+  | 'ended_at'
+  | 'current_round'
+  | 'stream_url'
+  | 'created_at'
+  | 'updated_at'
+> & Partial<Pick<ScheduledLiveRow, 'status' | 'current_round' | 'stream_url'>>
+
+// ─── Live Engine — Rodadas de Gamificação (Bidding War) ───────────────────────
+
+export interface LiveGameRow {
+  id:                string
+  live_id:           string
+  round_number:      number
+  option_name:       string
+  description:       string | null
+  min_bid_goal_usd:  number
+  current_bids_usd:  number
+  is_winner:         boolean
+  created_at:        string
+  updated_at:        string
+}
+
+export type LiveGameInsert = Omit<LiveGameRow,
+  | 'id'
+  | 'current_bids_usd'
+  | 'is_winner'
+  | 'created_at'
+  | 'updated_at'
+> & Partial<Pick<LiveGameRow, 'current_bids_usd' | 'is_winner' | 'description'>>
+
+// ─── Live Engine — Participantes / Ingressos ──────────────────────────────────
+
+export interface LiveParticipantRow {
+  id:             string
+  live_id:        string
+  viewer_id:      string
+  transaction_id: string | null
+  joined_at:      string | null    // NULL até entrar na sala
+  created_at:     string
+}
+
+export type LiveParticipantInsert = Omit<LiveParticipantRow, 'id' | 'created_at'>
+  & Partial<Pick<LiveParticipantRow, 'joined_at'>>
+
 // ─── Database schema (compatível com createClient<Database>()) ─────────────────
 
 export interface Database {
@@ -182,6 +256,21 @@ export interface Database {
         Insert: TransactionInsert
         Update: never   // transações são imutáveis (apenas status é alterável via RPC)
       }
+      scheduled_lives: {
+        Row:    ScheduledLiveRow
+        Insert: ScheduledLiveInsert
+        Update: Partial<ScheduledLiveInsert>
+      }
+      live_games: {
+        Row:    LiveGameRow
+        Insert: LiveGameInsert
+        Update: Partial<LiveGameInsert>
+      }
+      live_participants: {
+        Row:    LiveParticipantRow
+        Insert: LiveParticipantInsert
+        Update: Partial<LiveParticipantInsert>
+      }
     }
     Views:     Record<string, never>
     Functions: Record<string, never>
@@ -192,6 +281,8 @@ export interface Database {
       transaction_type:  TransactionType
       subscription_tier: SubscriptionTier
       auction_status:    AuctionStatus
+      live_type:         LiveType
+      live_status:       LiveStatus
     }
   }
 }
